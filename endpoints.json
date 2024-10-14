@@ -25,5 +25,21 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "fetchs an article by its given id (any number which exists in the database)",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 3,
+        "title": "Example Article",
+        "topic": "examples",
+        "author": "edsample",
+        "body": "This is the body of an example article. Written by Ed.",
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
   }
 }
