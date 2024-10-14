@@ -10,7 +10,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "fetchs an array of all articles ordered by newest to oldest",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
@@ -22,6 +22,15 @@
           "created_at": "2018-05-30T15:59:13.341Z",
           "votes": 0,
           "comment_count": 6
+        },
+        {
+          "title": "Example article",
+          "topic": "cooking",
+          "author": "beegee",
+          "body": "Text from the article..",
+          "created_at": "2016-01-30T15:59:13.341Z",
+          "votes": 2,
+          "comment_count": 2
         }
       ]
     }
@@ -40,6 +49,30 @@
         "votes": 0,
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "fetchs an array of comments that share the article id provided",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 9,
+          "votes": 0,
+          "created_at": "2020-01-01T03:08:00.000Z",
+          "author": "lars",
+          "body": "Superficially charming",
+          "article_id": 1
+        },
+        {
+          "comment_id": 4,
+          "votes": -100,
+          "created_at": "2019-02-23T12:08:00.000Z",
+          "author": "iced",
+          "body": "Hi there!",
+          "article_id": 1
+        }
+      ]
     }
   }
 }

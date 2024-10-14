@@ -8,12 +8,6 @@ exports.fetchArticleById = (id) => {
         return Promise.reject({ status: 404, msg: "Author does not exist" });
       }
       return rows[0];
-    })
-    .catch((err) => {
-      if (err.code === "22P02") {
-        return Promise.reject({ status: 400, msg: "Bad request" });
-      }
-      return Promise.reject(err);
     });
 };
 
@@ -30,8 +24,20 @@ exports.fetchArticles = () => {
         return Promise.reject({ status: 404, msg: "No articles found" });
       }
       return rows;
-    })
-    .catch((err) => {
-      return Promise.reject(err);
+    });
+};
+
+exports.fetchCommentsByArticleId = (id) => {
+  return db
+    .query(
+      `SELECT comment_id, votes, created_at, author, body, article_id FROM comments WHERE article_id = $1 ORDER BY created_at DESC
+      `,
+      [id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+      return rows;
     });
 };
