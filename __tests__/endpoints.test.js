@@ -26,7 +26,9 @@ describe("GET: /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        expect(Array.isArray(body.topics)).toBe(true);
+        const topics = body.topics;
+        expect(topics.length).toBeGreaterThan(0);
+        expect(Array.isArray(topics)).toBe(true);
         body.topics.forEach((topic) => {
           expect(topic).toHaveProperty("slug");
           expect(topic).toHaveProperty("description");
@@ -78,6 +80,7 @@ describe("GET: /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
+        expect(articles.length).toBeGreaterThan(0);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         expect(
@@ -98,15 +101,43 @@ describe("GET: /api/articles", () => {
         });
       });
   });
-  test("GET 404: Sends a not found error if no articles are found", async () => {
-    await db.query(
-      `DELETE FROM comments; DELETE FROM articles; DELETE FROM users; DELETE FROM topics;`
-    );
+});
+
+describe("GET: /api/articles/:article_id/comments", () => {
+  test("GET 200: Returns an array of comments which share the article id passed in and each comment object has the correct properties, sorted by newest first", () => {
     return request(app)
-      .get("/api/articles")
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBeGreaterThan(0);
+        expect(Array.isArray(body.comments)).toBe(true);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(comment.article_id).toBe(1);
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("article_id");
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("body");
+        });
+      });
+  });
+  test("GET 400: Returns a bad request error when passed an id that cannot be processed", () => {
+    return request(app)
+      .get("/api/articles/invalid_id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("GET 404: Returns a not found error when passed an id that can be processed but there are no associated rows", () => {
+    return request(app)
+      .get("/api/articles/9999/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No articles found");
+        expect(body.msg).toBe("Not found");
       });
   });
 });
