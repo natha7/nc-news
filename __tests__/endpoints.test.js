@@ -10,7 +10,7 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("GET: /api", () => {
-  test("GET 200: Returns a JSON string describing the endpoints, acceptable queries, the format of the request body and an example response", () => {
+  test("GET 200: Returns an object describing the endpoints, acceptable queries, the format of the request body and an example response", () => {
     return request(app)
       .get("/api")
       .expect(200)
