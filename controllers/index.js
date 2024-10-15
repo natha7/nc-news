@@ -18,7 +18,10 @@ const {
 
 const { deleteCommentById } = require("./comments.controller.js");
 
+const { getUsers } = require("./users.controller.js");
+
 module.exports = {
+  getUsers,
   getArticleById,
   getArticles,
   getCommentsByArticleId,

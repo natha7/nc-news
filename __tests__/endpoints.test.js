@@ -333,3 +333,21 @@ describe("DELETE: /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("GET: /api/users", () => {
+  test("GET 200: Returns an array of user objects each with the correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const users = body.users;
+        expect(users.length).toBeGreaterThan(0);
+        expect(Array.isArray(users)).toBe(true);
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+});

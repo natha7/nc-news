@@ -35,6 +35,34 @@
       ]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        },
+        {
+          "username": "icellusedkars",
+          "name": "sam",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        },
+        {
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        },
+        {
+          "username": "lurker",
+          "name": "do_nothing",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      ]
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "fetchs an article by its given id (any number which exists in the database)",
     "queries": [],
@@ -94,7 +122,7 @@
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "Increments or decrements the votes of an article",
+    "description": "increments or decrements the votes of an article",
     "queries": [],
     "exampleRequest": {
       "inc_votes": 2
@@ -113,7 +141,7 @@
     }
   },
   "DELETE /api/comments/:comment_id": {
-    "description": "Removes the comment with the comment_id provided from the database",
+    "description": "removes from the database the comment with the comment_id provided",
     "queries": [],
     "exampleResponse": {}
   }
