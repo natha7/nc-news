@@ -60,7 +60,7 @@ describe("GET: /api/articles/:article_id", () => {
       .get("/api/articles/invalid_id")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe("Invalid ID type");
       });
   });
   test("GET 404: Returns a not found error when article_id is valid to process but no data found", () => {
@@ -129,7 +129,7 @@ describe("GET: /api/articles/:article_id/comments", () => {
       .get("/api/articles/invalid_id/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe("Invalid ID type");
       });
   });
   test("GET 404: Returns a not found error when passed an id that can be processed but there are no associated rows", () => {

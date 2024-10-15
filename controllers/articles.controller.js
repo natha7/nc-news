@@ -11,9 +11,6 @@ exports.getArticleById = (request, response, next) => {
       response.status(200).send({ article });
     })
     .catch((err) => {
-      if (err.code === "22P02") {
-        next({ status: 400, msg: "Bad request" });
-      }
       next(err);
     });
 };
@@ -36,9 +33,6 @@ exports.getCommentsByArticleId = (request, response, next) => {
       response.status(200).send({ comments });
     })
     .catch((err) => {
-      if (err.code === "22P02") {
-        next({ status: 400, msg: "Bad request" });
-      }
       next(err);
     });
 };
