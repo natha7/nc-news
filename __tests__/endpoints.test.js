@@ -306,3 +306,30 @@ describe("PATCH: /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE: /api/comments/:comment_id", () => {
+  test("DELETE 204: Returns a no content status code to display the fulfilled request with no content", () => {
+    return request(app)
+      .delete("/api/comments/3")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("DELETE 400: Returns a bad request error when provided comment_id cannot be processed", () => {
+    return request(app)
+      .delete("/api/comments/invalid_id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request - invalid type");
+      });
+  });
+  test("DELETE 404: Returns a not found error when provided comment_id does not exist in the database", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No comment with id 999 found");
+      });
+  });
+});

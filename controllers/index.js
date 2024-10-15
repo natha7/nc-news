@@ -16,12 +16,15 @@ const {
   handlePsqlErrors,
 } = require("./errors.controller.js");
 
+const { deleteCommentById } = require("./comments.controller.js");
+
 module.exports = {
   getArticleById,
   getArticles,
   getCommentsByArticleId,
   postCommentByArticleId,
   patchArticleById,
+  deleteCommentById,
   getEndpoints,
   getAllTopics,
   handleServerErrors,
