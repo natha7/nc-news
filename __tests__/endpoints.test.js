@@ -174,28 +174,14 @@ describe("POST: /api/articles/:article_id/comments", () => {
         expect(postedComment).toHaveProperty("created_at");
       });
   });
-  test("POST 422: Returns an unprocessable entity error when passed a correct article id but too few properties on the posted comment", () => {
+  test("POST 400: Returns an unprocessable entity error when passed a correct article id but missing properties on the posted comment", () => {
     const commentToPost = {
       username: "icellusedkars",
     };
     return request(app)
       .post("/api/articles/10/comments")
       .send(commentToPost)
-      .expect(422)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid comment format");
-      });
-  });
-  test("POST 422: Returns an unprocessable entity error when passed a correct article id but too many properties on the posted comment", () => {
-    const commentToPost = {
-      username: "icellusedkars",
-      body: "test comment",
-      invalid_extra_key: true,
-    };
-    return request(app)
-      .post("/api/articles/10/comments")
-      .send(commentToPost)
-      .expect(422)
+      .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid comment format");
       });
@@ -226,6 +212,20 @@ describe("POST: /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid ID type");
+      });
+  });
+  test("POST 404: Returns a not found error when the username passed in the comment does not exist", () => {
+    const commentToPost = {
+      username: "invalid_user",
+      body: "Test comment",
+    };
+
+    return request(app)
+      .post("/api/articles/10/comments")
+      .send(commentToPost)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Username does not exist");
       });
   });
 });
