@@ -1,6 +1,9 @@
 exports.handlePsqlErrors = (err, request, response, next) => {
   if (err.code === "22P02") {
     response.status(400).send({ msg: "Invalid ID type" });
+  }
+  if (err.code === "23503") {
+    response.status(404).send({ msg: "Username does not exist" });
   } else next(err);
 };
 

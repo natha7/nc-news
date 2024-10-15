@@ -43,9 +43,9 @@ exports.insertCommentByArticleId = (id, commentToPost) => {
   const { username, body } = commentToPost;
   const commentKeys = Object.keys(commentToPost);
 
-  if (!username || !body || commentKeys.length !== 2) {
+  if (!username || !body) {
     return Promise.reject({
-      status: 422,
+      status: 400,
       msg: "Invalid comment format",
     });
   }
