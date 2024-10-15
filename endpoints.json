@@ -94,7 +94,7 @@
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "increments or decrements the votes of an article",
+    "description": "Increments or decrements the votes of an article",
     "queries": [],
     "exampleRequest": {
       "inc_votes": 2
@@ -111,5 +111,10 @@
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Removes the comment with the comment_id provided from the database",
+    "queries": [],
+    "exampleResponse": {}
   }
 }
