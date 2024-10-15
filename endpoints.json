@@ -10,8 +10,18 @@
     }
   },
   "GET /api/articles": {
-    "description": "fetchs an array of all articles ordered by newest to oldest",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "fetchs an array of all articles ordered by newest to oldest or using sort_by and order queries",
+    "queries": [
+      "author",
+      "article_id",
+      "topic",
+      "created_at",
+      "votes",
+      "comment_count",
+      "title",
+      "sort_by",
+      "order"
+    ],
     "exampleResponse": {
       "articles": [
         {
