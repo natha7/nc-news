@@ -28,11 +28,14 @@ exports.getArticles = (request, response, next) => {
 exports.getCommentsByArticleId = (request, response, next) => {
   const id = request.params.article_id;
 
-  const promises = [fetchCommentsByArticleId(id), fetchArticleById(id)];
+  const getArticleGetComments = [
+    fetchArticleById(id),
+    fetchCommentsByArticleId(id),
+  ];
 
-  Promise.all(promises)
+  Promise.all(getArticleGetComments)
     .then((results) => {
-      response.status(200).send({ comments: results[0] });
+      response.status(200).send({ comments: results[1] });
     })
     .catch((err) => {
       next(err);
