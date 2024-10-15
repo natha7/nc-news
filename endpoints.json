@@ -92,5 +92,24 @@
         "created_at": "2024-10-15T10:24:20.280Z"
       }
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "increments or decrements the votes of an article",
+    "queries": [],
+    "exampleRequest": {
+      "inc_votes": 2
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 10,
+        "body": "This is a example article",
+        "title": "Example title",
+        "topic": "examples",
+        "author": "icellusedkars",
+        "votes": 2,
+        "created_at": "2024-10-15T10:24:20.280Z",
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
   }
 }
