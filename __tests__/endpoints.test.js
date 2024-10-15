@@ -101,6 +101,78 @@ describe("GET: /api/articles", () => {
         });
       });
   });
+  test("GET 200: The returned array of articles can be sorted by an alphabetical based sort_by in ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBeGreaterThan(0);
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("title", { descending: false });
+      });
+  });
+  test("GET 200: The returned array of articles can be sorted by a numerical based sort_by query in ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBeGreaterThan(0);
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("comment_count", { descending: false });
+      });
+  });
+  test("GET 200: The returned array of articles is successfully ordered and case insensitive", () => {
+    return request(app)
+      .get("/api/articles?sort_by=COMMENT_COUNT&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBeGreaterThan(0);
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("comment_count", { descending: false });
+      });
+  });
+  test("GET 200: The returned array defaults to sorted by created_at when provided the order but not the sort_by", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBeGreaterThan(0);
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("created_at", { descending: false });
+      });
+  });
+  test("GET 200: The returned array defaults to desc when provided sort_by but not order ", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBeGreaterThan(0);
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+
+  test("GET 400: Returns a bad request error when passed in an unapproved sort_by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=unapprovedColumn&order=desc")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("GET 400: Returns a bad request error when passed in an unapproved order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=unapprovedOrder")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("GET: /api/articles/:article_id/comments", () => {
@@ -253,9 +325,7 @@ describe("PATCH: /api/articles/:article_id", () => {
       });
   });
   test("PATCH 400: Returns a bad request error when passed a request body without an inc_votes key", () => {
-    const votesToPatch = {
-      invalid_extra_key: true,
-    };
+    const votesToPatch = {};
 
     return request(app)
       .patch("/api/articles/2")
