@@ -74,5 +74,23 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a comment to the comments table with the article id provided",
+    "queries": [],
+    "exampleRequest": {
+      "username": "icellusedkars",
+      "body": "Hi, this is a test comment"
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 19,
+        "body": "Hi, this is a test comment",
+        "article_id": 10,
+        "author": "icellusedkars",
+        "votes": 0,
+        "created_at": "2024-10-15T10:24:20.280Z"
+      }
+    }
   }
 }

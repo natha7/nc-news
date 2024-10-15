@@ -38,3 +38,25 @@ exports.fetchCommentsByArticleId = (id) => {
       return rows;
     });
 };
+
+exports.insertCommentByArticleId = (id, commentToPost) => {
+  const { username, body } = commentToPost;
+  const commentKeys = Object.keys(commentToPost);
+
+  if (!username || !body || commentKeys.length !== 2) {
+    return Promise.reject({
+      status: 422,
+      msg: "Invalid comment format",
+    });
+  }
+
+  return db
+    .query(
+      `INSERT INTO comments (body, author, article_id)
+    VALUES ($1, $2, $3) RETURNING *`,
+      [body, username, id]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

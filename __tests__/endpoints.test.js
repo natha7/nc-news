@@ -150,3 +150,82 @@ describe("GET: /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST: /api/articles/:article_id/comments", () => {
+  test("POST 201: Returns the posted comment with the correct article id and properties", () => {
+    const commentToPost = {
+      username: "icellusedkars",
+      body: "Hi, this is a test comment",
+    };
+
+    return request(app)
+      .post("/api/articles/10/comments")
+      .send(commentToPost)
+      .expect(201)
+      .then(({ body }) => {
+        const postedComment = body.comment;
+        expect(postedComment).toHaveProperty("comment_id");
+        expect(postedComment).toHaveProperty("author", "icellusedkars");
+        expect(postedComment).toHaveProperty(
+          "body",
+          "Hi, this is a test comment"
+        );
+        expect(postedComment).toHaveProperty("article_id", 10);
+        expect(postedComment).toHaveProperty("created_at");
+      });
+  });
+  test("POST 422: Returns an unprocessable entity error when passed a correct article id but too few properties on the posted comment", () => {
+    const commentToPost = {
+      username: "icellusedkars",
+    };
+    return request(app)
+      .post("/api/articles/10/comments")
+      .send(commentToPost)
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid comment format");
+      });
+  });
+  test("POST 422: Returns an unprocessable entity error when passed a correct article id but too many properties on the posted comment", () => {
+    const commentToPost = {
+      username: "icellusedkars",
+      body: "test comment",
+      invalid_extra_key: true,
+    };
+    return request(app)
+      .post("/api/articles/10/comments")
+      .send(commentToPost)
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid comment format");
+      });
+  });
+  test("POST 404: Returns a not found error when article with passed in id is valid but does not exist", () => {
+    const commentToPost = {
+      username: "icellusedkars",
+      body: "Hi, this is a test comment",
+    };
+
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(commentToPost)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article does not exist");
+      });
+  });
+  test("POST 400: Returns a bad request error when article with passed in id is invalid", () => {
+    const commentToPost = {
+      username: "icellusedkars",
+      body: "Hi, this is a test comment",
+    };
+
+    return request(app)
+      .post("/api/articles/invalid_id/comments")
+      .send(commentToPost)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID type");
+      });
+  });
+});
