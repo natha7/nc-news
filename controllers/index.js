@@ -2,6 +2,7 @@ const {
   getArticleById,
   getArticles,
   getCommentsByArticleId,
+  postCommentByArticleId,
 } = require("./articles.controller.js");
 
 const { getEndpoints } = require("./endpoints.controller.js");
@@ -18,6 +19,7 @@ module.exports = {
   getArticleById,
   getArticles,
   getCommentsByArticleId,
+  postCommentByArticleId,
   getEndpoints,
   getAllTopics,
   handleServerErrors,
