@@ -68,7 +68,7 @@ describe("GET: /api/articles/:article_id", () => {
       .get("/api/articles/999")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Author does not exist");
+        expect(body.msg).toBe("Article does not exist");
       });
   });
 });
@@ -137,7 +137,17 @@ describe("GET: /api/articles/:article_id/comments", () => {
       .get("/api/articles/9999/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Not found");
+        expect(body.msg).toBe("Article does not exist");
+      });
+  });
+  test("GET 200: Returns an empty comments array when article id exists but the article has no associated comments", () => {
+    return request(app)
+      .get("/api/articles/10/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(Array.isArray(comments)).toBe(true);
+        expect(comments).toHaveLength(0);
       });
   });
 });

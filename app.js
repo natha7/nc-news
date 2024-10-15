@@ -5,10 +5,10 @@ const {
   getCommentsByArticleId,
   getEndpoints,
   getAllTopics,
+  handlePsqlErrors,
   handleServerErrors,
   handleCustomErrors,
 } = require("./controllers");
-const { handlePsqlErrors } = require("./controllers/errors.controller");
 
 const app = express();
 

@@ -11,6 +11,7 @@ const { getAllTopics } = require("./topics.controller.js");
 const {
   handleServerErrors,
   handleCustomErrors,
+  handlePsqlErrors,
 } = require("./errors.controller.js");
 
 module.exports = {
@@ -21,4 +22,5 @@ module.exports = {
   getAllTopics,
   handleServerErrors,
   handleCustomErrors,
+  handlePsqlErrors,
 };
