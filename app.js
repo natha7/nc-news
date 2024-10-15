@@ -9,6 +9,8 @@ const {
   handleServerErrors,
   handleCustomErrors,
   postCommentByArticleId,
+  updateArticleById,
+  patchArticleById,
 } = require("./controllers");
 
 const app = express();
@@ -26,6 +28,8 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
+
+app.patch("/api/articles/:article_id", patchArticleById);
 
 app.use(handlePsqlErrors);
 

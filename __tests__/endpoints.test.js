@@ -60,7 +60,7 @@ describe("GET: /api/articles/:article_id", () => {
       .get("/api/articles/invalid_id")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid ID type");
+        expect(body.msg).toBe("Bad request - invalid type");
       });
   });
   test("GET 404: Returns a not found error when article_id is valid to process but no data found", () => {
@@ -129,7 +129,7 @@ describe("GET: /api/articles/:article_id/comments", () => {
       .get("/api/articles/invalid_id/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid ID type");
+        expect(body.msg).toBe("Bad request - invalid type");
       });
   });
   test("GET 404: Returns a not found error when passed an id that can be processed but there are no associated rows", () => {
@@ -183,7 +183,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
       .send(commentToPost)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid comment format");
+        expect(body.msg).toBe("Missing required key(s)");
       });
   });
   test("POST 404: Returns a not found error when article with passed in id is valid but does not exist", () => {
@@ -211,7 +211,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
       .send(commentToPost)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid ID type");
+        expect(body.msg).toBe("Bad request - invalid type");
       });
   });
   test("POST 404: Returns a not found error when the username passed in the comment does not exist", () => {
@@ -226,6 +226,83 @@ describe("POST: /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Username does not exist");
+      });
+  });
+});
+
+describe("PATCH: /api/articles/:article_id", () => {
+  test("PATCH 200: Returns the patched article object with votes adjusted to the inc_votes amount with the correct id", () => {
+    const votesToPatch = {
+      inc_votes: 2,
+    };
+
+    return request(app)
+      .patch("/api/articles/2")
+      .send(votesToPatch)
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toHaveProperty("body");
+        expect(article).toHaveProperty("author");
+        expect(article).toHaveProperty("article_id", 2);
+        expect(article).toHaveProperty("topic");
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes", 2);
+        expect(article).toHaveProperty("article_img_url");
+        expect(article).toHaveProperty("title");
+      });
+  });
+  test("PATCH 400: Returns a bad request error when passed a request body without an inc_votes key", () => {
+    const votesToPatch = {
+      invalid_extra_key: true,
+    };
+
+    return request(app)
+      .patch("/api/articles/2")
+      .send(votesToPatch)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing required key(s)");
+      });
+  });
+  test("PATCH 404: Returns a not found request error when article_id with the passed in id does not exist", () => {
+    const votesToPatch = {
+      inc_votes: 2,
+    };
+
+    return request(app)
+      .patch("/api/articles/999")
+      .send(votesToPatch)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article does not exist");
+      });
+  });
+  test("PATCH 400: Returns a bad request error when value in inc_votes is not a valid data type", () => {
+    const votesToPatch = {
+      inc_votes: "string",
+    };
+
+    return request(app)
+      .patch("/api/articles/10")
+      .send(votesToPatch)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request - invalid type");
+      });
+  });
+
+  test("PATCH 400: Returns a bad request error when article_id is an invalid type", () => {
+    const votesToPatch = {
+      inc_votes: 4,
+    };
+
+    return request(app)
+      .patch("/api/articles/invalid_id")
+      .send(votesToPatch)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request - invalid type");
       });
   });
 });
