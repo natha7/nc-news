@@ -12,7 +12,7 @@ exports.fetchArticleById = (id) => {
     });
 };
 
-exports.fetchArticles = (sort_by = "created_at", order = "DESC") => {
+exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
   order = order.toUpperCase();
   sort_by = sort_by.toLowerCase();
 
@@ -29,19 +29,29 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC") => {
 
   const queryValues = [];
   let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.body) AS INTEGER) AS comment_count FROM articles 
-  JOIN comments ON articles.article_id = comments.article_id 
-  GROUP BY articles.article_id
-  ORDER BY`;
+  LEFT OUTER JOIN comments ON articles.article_id = comments.article_id`;
+
+  if (topic) {
+    queryString += ` WHERE articles.topic = $1`;
+    queryValues.push(topic);
+  }
+
+  queryString += ` GROUP BY articles.article_id`;
 
   if (validQueries.includes(sort_by) && validOrders.includes(order)) {
-    queryString += ` %I %s`;
-    queryValues.push(sort_by);
-    queryValues.push(order);
+    queryString += ` ORDER BY %I %s`;
+    queryString = format(queryString, sort_by, order);
   } else {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  return db.query(format(queryString, ...queryValues)).then(({ rows }) => {
+  return db.query(queryString, queryValues).then(({ rows }) => {
+    if (rows.length === 0 && topic) {
+      return Promise.reject({
+        status: 404,
+        msg: `No articles on ${topic} found`,
+      });
+    }
     if (rows.length === 0) {
       return Promise.reject({ status: 404, msg: "No articles found" });
     }
