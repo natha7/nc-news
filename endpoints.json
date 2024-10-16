@@ -10,8 +10,9 @@
     }
   },
   "GET /api/articles": {
-    "description": "fetchs an array of all articles ordered by newest to oldest or using sort_by and order queries",
+    "description": "fetchs an array of all articles ordered by newest to oldest or using sort_by and order queries, articles can be filtered by topics",
     "queries": [
+      "topics",
       "author",
       "article_id",
       "topic",
