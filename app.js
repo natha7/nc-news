@@ -36,6 +36,10 @@ app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.get("/api/users", getUsers);
 
+app.all("*", (request, response, next) => {
+  next({ status: 404, msg: "Not found" });
+});
+
 app.use(handlePsqlErrors);
 
 app.use(handleCustomErrors);

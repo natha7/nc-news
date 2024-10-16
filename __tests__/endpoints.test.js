@@ -562,3 +562,14 @@ describe("GET: /api/articles?topics", () => {
       });
   });
 });
+
+describe("GET 404: /api/X", () => {
+  test("GET 404: Returns a not found error when trying to get from any endpoint that does not exist", () => {
+    return request(app)
+      .get("/api/chicken")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
