@@ -18,7 +18,7 @@ const {
 
 const { deleteCommentById } = require("./comments.controller.js");
 
-const { getUsers } = require("./users.controller.js");
+const { getUsers, getUserByUsername } = require("./users.controller.js");
 
 module.exports = {
   getUsers,
@@ -29,6 +29,7 @@ module.exports = {
   patchArticleById,
   deleteCommentById,
   getEndpoints,
+  getUserByUsername,
   getAllTopics,
   handleServerErrors,
   handleCustomErrors,

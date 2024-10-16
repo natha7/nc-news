@@ -557,3 +557,36 @@ describe("GET 404: /api/X", () => {
       });
   });
 });
+
+describe("GET: /api/users/:username", () => {
+  test("GET 200: Returns a user object with the username passed in", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        const user = body.user;
+        console.log(user);
+        expect(user).toHaveProperty("username", "butter_bridge");
+        expect(user).toHaveProperty("avatar_url");
+        expect(user).toHaveProperty("name", "jonny");
+      });
+  });
+  test("GET 404: Returns a not found error and custom message when the username requested does not exist in the database", () => {
+    return request(app)
+      .get("/api/users/invalid_user")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No user found with username: invalid_user");
+      });
+  });
+  test("GET 400: Returns a bad request error when the username contains special characters", () => {
+    return request(app)
+      .get("/api/users/;special!character*user")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Bad request - username cannot contain special characters"
+        );
+      });
+  });
+});

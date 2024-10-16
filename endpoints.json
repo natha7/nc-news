@@ -155,5 +155,16 @@
     "description": "removes from the database the comment with the comment_id provided",
     "queries": [],
     "exampleResponse": {}
+  },
+  "GET /api/users/:username": {
+    "description": "fetchs a user object with the passed in username",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "username": "butter_bridge",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        "name": "jonny"
+      }
+    }
   }
 }
