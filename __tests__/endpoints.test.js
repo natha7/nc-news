@@ -63,6 +63,42 @@ describe("GET: /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request - invalid type");
       });
   });
+  test("GET 200: Returns an article with the correct article id and properties and additionally a comment_count property when article has comments", () => {
+    return request(app)
+      .get("/api/articles/5")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(body.article.article_id).toBe(5);
+        expect(article).toHaveProperty("body");
+        expect(article).toHaveProperty("author");
+        expect(article).toHaveProperty("article_id");
+        expect(article).toHaveProperty("topic");
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes");
+        expect(article).toHaveProperty("article_img_url");
+        expect(article).toHaveProperty("title");
+        expect(article).toHaveProperty("comment_count", 2);
+      });
+  });
+  test("GET 200: Returns an article with the correct article id and properties and additionally a comment_count property when article does not have comments", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(body.article.article_id).toBe(2);
+        expect(article).toHaveProperty("body");
+        expect(article).toHaveProperty("author");
+        expect(article).toHaveProperty("article_id");
+        expect(article).toHaveProperty("topic");
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes");
+        expect(article).toHaveProperty("article_img_url");
+        expect(article).toHaveProperty("title");
+        expect(article).toHaveProperty("comment_count", 0);
+      });
+  });
   test("GET 404: Returns a not found error when article_id is valid to process but no data found", () => {
     return request(app)
       .get("/api/articles/999")
@@ -478,6 +514,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       });
   });
 });
+
 describe("GET: /api/articles?topics", () => {
   test("GET 200: The returned array of articles is filtered by the topic query value", () => {
     return request(app)
