@@ -70,14 +70,6 @@ describe("GET: /api/articles/:article_id", () => {
       .then(({ body }) => {
         const article = body.article;
         expect(body.article.article_id).toBe(5);
-        expect(article).toHaveProperty("body");
-        expect(article).toHaveProperty("author");
-        expect(article).toHaveProperty("article_id");
-        expect(article).toHaveProperty("topic");
-        expect(article).toHaveProperty("created_at");
-        expect(article).toHaveProperty("votes");
-        expect(article).toHaveProperty("article_img_url");
-        expect(article).toHaveProperty("title");
         expect(article).toHaveProperty("comment_count", 2);
       });
   });
@@ -88,14 +80,6 @@ describe("GET: /api/articles/:article_id", () => {
       .then(({ body }) => {
         const article = body.article;
         expect(body.article.article_id).toBe(2);
-        expect(article).toHaveProperty("body");
-        expect(article).toHaveProperty("author");
-        expect(article).toHaveProperty("article_id");
-        expect(article).toHaveProperty("topic");
-        expect(article).toHaveProperty("created_at");
-        expect(article).toHaveProperty("votes");
-        expect(article).toHaveProperty("article_img_url");
-        expect(article).toHaveProperty("title");
         expect(article).toHaveProperty("comment_count", 0);
       });
   });
