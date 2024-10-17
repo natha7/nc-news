@@ -921,11 +921,25 @@ describe("GET /api/articles?limit=&p=", () => {
         expect(articles).toHaveLength(3);
       });
   });
+  test("The articles are divided into the proper page divisions", async () => {
+    const pageLimits = [];
+    for (let i = 1; i < 8; i++) {
+      pageLimits.push(
+        await request(app)
+          .get(`/api/articles?limit=2&p=${i}`)
+          .expect(200)
+          .then(({ body }) => {
+            const articles = body.articles;
+            return articles.length;
+          })
+      );
+    }
+    expect(pageLimits).toEqual([2, 2, 2, 2, 2, 2, 1]);
+  });
 });
 describe("UTILS: getMaxArticlePages", () => {
   test("Returns a number representing the maximum amount of pages a limit renders", async () => {
     await getMaxArticlePages(2).then((result) => {
-      console.log(result);
       expect(result).toBe(7);
     });
   });
