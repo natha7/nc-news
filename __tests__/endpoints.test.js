@@ -4,8 +4,11 @@ const testData = require("../db/data/test-data/index.js");
 const db = require("../db/connection.js");
 const app = require("../app.js");
 const endpoints = require("../endpoints.json");
+const { getTopicByName } = require("../controllers/utils/getTopicByName.js");
 
-beforeEach(() => seed(testData));
+beforeEach(() => {
+  return seed(testData);
+});
 
 afterAll(() => db.end());
 
@@ -822,5 +825,18 @@ describe("POST: /api/articles", () => {
           "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700"
         );
       });
+  });
+});
+
+describe("UTILS: getTopicByName", () => {
+  test("Returns a topic object when topic exists in the topics table", () => {
+    getTopicByName("cats").then((res) => {
+      expect(res).toEqual({ description: "Not dogs", slug: "cats" });
+    });
+  });
+  test("Returns a no topic found error when the result of the query is empty", () => {
+    getTopicByName("dogs").catch((err) => {
+      expect(err.msg).toBe("Not found");
+    });
   });
 });
