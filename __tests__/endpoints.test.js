@@ -6,9 +6,7 @@ const app = require("../app.js");
 const endpoints = require("../endpoints.json");
 const { getTopicByName } = require("../controllers/utils/getTopicByName.js");
 
-beforeEach(() => {
-  return seed(testData);
-});
+beforeEach(() => seed(testData));
 
 afterAll(() => db.end());
 
