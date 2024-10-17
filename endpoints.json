@@ -166,5 +166,22 @@
         "name": "jonny"
       }
     }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates the votes by inc_votes of a comment with the id of comment_id",
+    "queries": [],
+    "exampleRequest": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "article_id": 9,
+        "author": "butter_bridge",
+        "votes": 17,
+        "created_at": "2020-04-06T12:17:00.000Z"
+      }
+    }
   }
 }

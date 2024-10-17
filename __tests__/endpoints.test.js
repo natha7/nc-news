@@ -565,7 +565,6 @@ describe("GET: /api/users/:username", () => {
       .expect(200)
       .then(({ body }) => {
         const user = body.user;
-        console.log(user);
         expect(user).toHaveProperty("username", "butter_bridge");
         expect(user).toHaveProperty("avatar_url");
         expect(user).toHaveProperty("name", "jonny");
@@ -587,6 +586,75 @@ describe("GET: /api/users/:username", () => {
         expect(body.msg).toBe(
           "Bad request - username cannot contain special characters"
         );
+      });
+  });
+});
+
+describe("PATCH: /api/comments/:comment_id", () => {
+  test("PATCH 200: Returns the comment object with correct properties and incremented in votes by the inc_votes request amount on the correct comment_id", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        inc_votes: 4,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment).toHaveProperty("votes", 20);
+        expect(comment).toHaveProperty("body");
+        expect(comment).toHaveProperty("author");
+        expect(comment).toHaveProperty("article_id");
+        expect(comment).toHaveProperty("created_at");
+        expect(comment).toHaveProperty("comment_id", 1);
+      });
+  });
+  test("PATCH 200: Returns the comment object decremented in votes by the inc_votes request amount on the correct comment_id", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        inc_votes: -6,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment).toHaveProperty("votes", 10);
+        expect(comment).toHaveProperty("comment_id", 1);
+      });
+  });
+  test("PATCH 400: Returns a bad request error when the comment_id provided is not a valid type i.e not a number", () => {
+    return request(app)
+      .patch("/api/comments/invalid_id")
+      .send({ inc_votes: 1 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request - invalid type");
+      });
+  });
+  test("PATCH 404: Returns a not found error when the comment_id provided is a valid type but does not exist in the database", () => {
+    return request(app)
+      .patch("/api/comments/9999")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment with id: 9999 not found");
+      });
+  });
+  test("PATCH 400: Returns a bad request error when the inc_votes value is not valid i.e not a number", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "invalid input" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request - invalid type");
+      });
+  });
+  test("PATCH 400: Returns a bad request error when the inc_votes value is a decimal", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 4.99 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request - invalid type");
       });
   });
 });

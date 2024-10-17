@@ -4,7 +4,7 @@ const {
   handleServerErrors,
   handleCustomErrors,
 } = require("./controllers");
-const apiRouter = require("./routes/api.js");
+const apiRouter = require("./routes/api.router.js");
 const app = express();
 
 app.use(express.json());
