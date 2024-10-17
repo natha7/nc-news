@@ -24,8 +24,8 @@
       ],
       "order": ["asc", "desc"],
       "topic": "any topic in topic table",
-      "limit": "an integer, defaults to 10",
-      "p": "page number to offset limit"
+      "limit": "a positive integer, defaults to 10",
+      "p": "page number to offset limit (minimum of 1, if page number exceeds the maximum amount of pages the last page will be displayed)"
     },
     "exampleResponse": {
       "articles": [
