@@ -11,18 +11,22 @@
   },
   "GET /api/articles": {
     "description": "fetchs an array of all articles ordered by newest to oldest or using sort_by and order queries, articles can be filtered by topics",
-    "queries": [
-      "topics",
-      "author",
-      "article_id",
-      "topic",
-      "created_at",
-      "votes",
-      "comment_count",
-      "title",
-      "sort_by",
-      "order"
-    ],
+    "queries": ["topic", "sort_by", "order", "limit", "p"],
+    "queryValues": {
+      "sort_by": [
+        "author",
+        "article_id",
+        "topic",
+        "created_at",
+        "votes",
+        "comment_count",
+        "title"
+      ],
+      "order": ["asc", "desc"],
+      "topic": "any topic in topic table",
+      "limit": "an integer, defaults to 10",
+      "p": "page number to offset limit"
+    },
     "exampleResponse": {
       "articles": [
         {
