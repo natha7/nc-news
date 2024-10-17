@@ -1,3 +1,4 @@
+const { getMaxArticlePages } = require("../controllers/utils/getMaxPages.js");
 const db = require("../db/connection.js");
 const format = require("pg-format");
 
@@ -18,9 +19,28 @@ exports.fetchArticleById = (id) => {
     });
 };
 
-exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
+exports.fetchArticles = (
+  sort_by = "created_at",
+  order = "DESC",
+  topic,
+  limit,
+  p
+) => {
   order = order.toUpperCase();
   sort_by = sort_by.toLowerCase();
+
+  limit = Number(limit);
+  p = Number(p);
+
+  if (!p || Number.isNaN(p) || p <= 0) {
+    p = 1;
+  }
+
+  if (!limit || Number.isNaN(limit) || limit <= 0) {
+    limit = 10;
+  }
+
+  p = (p - 1) * limit;
 
   const validQueries = [
     "article_id",
@@ -38,8 +58,8 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
   LEFT OUTER JOIN comments ON articles.article_id = comments.article_id`;
 
   if (topic) {
-    queryString += ` WHERE articles.topic = $1`;
     queryValues.push(topic);
+    queryString += ` WHERE articles.topic = $${queryValues.length}`;
   }
 
   queryString += ` GROUP BY articles.article_id`;
@@ -51,18 +71,31 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  return db.query(queryString, queryValues).then(({ rows }) => {
-    if (rows.length === 0 && topic) {
-      return Promise.reject({
-        status: 404,
-        msg: `Not found`,
+  if (typeof limit === "number" && typeof p === "number") {
+    return getMaxArticlePages(limit)
+      .then((maxPages) => {
+        maxPages = (maxPages - 1) * limit;
+        if (p > maxPages) {
+          queryValues.push(limit);
+          queryString += ` LIMIT $${queryValues.length}`;
+          queryValues.push(maxPages);
+          queryString += ` OFFSET $${queryValues.length}`;
+        } else {
+          queryValues.push(limit);
+          queryString += ` LIMIT $${queryValues.length}`;
+          queryValues.push(p);
+          queryString += ` OFFSET $${queryValues.length}`;
+        }
+      })
+      .then(() => {
+        return db.query(queryString, queryValues).then(({ rows }) => {
+          if (rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "Not found" });
+          }
+          return rows;
+        });
       });
-    }
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Not found" });
-    }
-    return rows;
-  });
+  }
 };
 
 exports.fetchCommentsByArticleId = (id) => {

@@ -5,6 +5,7 @@ const db = require("../db/connection.js");
 const app = require("../app.js");
 const endpoints = require("../endpoints.json");
 const { getTopicByName } = require("../controllers/utils/getTopicByName.js");
+const { getMaxArticlePages } = require("../controllers/utils/getMaxPages.js");
 
 beforeEach(() => seed(testData));
 
@@ -101,7 +102,7 @@ describe("GET: /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         expect(
@@ -378,7 +379,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("title", { descending: true });
       });
@@ -389,7 +390,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("article_id", { descending: true });
       });
@@ -400,7 +401,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
@@ -411,7 +412,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("topic", { descending: true });
       });
@@ -422,7 +423,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("votes", { descending: true });
       });
@@ -433,7 +434,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("comment_count", { descending: true });
       });
@@ -444,7 +445,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("author", { descending: true });
       });
@@ -455,7 +456,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("created_at");
       });
@@ -466,7 +467,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("comment_count");
       });
@@ -477,7 +478,7 @@ describe("GET: /api/articles?sort_by&order", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("title", { descending: true });
       });
@@ -507,7 +508,7 @@ describe("GET: /api/articles?topics", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(12);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
@@ -520,7 +521,7 @@ describe("GET: /api/articles?topics", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
       });
   });
@@ -530,7 +531,7 @@ describe("GET: /api/articles?topics", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles.length).toBe(12);
+        expect(articles.length).toBe(10);
         expect(Array.isArray(articles)).toBe(true);
         articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
@@ -827,14 +828,119 @@ describe("POST: /api/articles", () => {
 });
 
 describe("UTILS: getTopicByName", () => {
-  test("Returns a topic object when topic exists in the topics table", () => {
-    getTopicByName("cats").then((res) => {
+  test("Returns a topic object when topic exists in the topics table", async () => {
+    await getTopicByName("cats").then((res) => {
       expect(res).toEqual({ description: "Not dogs", slug: "cats" });
     });
   });
-  test("Returns a no topic found error when the result of the query is empty", () => {
-    getTopicByName("dogs").catch((err) => {
+  test("Returns a no topic found error when the result of the query is empty", async () => {
+    await getTopicByName("dogs").catch((err) => {
       expect(err.msg).toBe("Not found");
+    });
+  });
+});
+describe("GET /api/articles?limit=&p=", () => {
+  test("GET 200: Returns an array of articles to a max number of the limit, at a default of 10", () => {
+    return request(app)
+      .get("/api/articles?limit")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(10);
+      });
+  });
+  test("GET 200: Returns an array of articles to a max number of the limit", () => {
+    return request(app)
+      .get("/api/articles?limit=12")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(12);
+      });
+  });
+  test("GET 200: Returns an array of articles offset by the page number set at 1 by default", () => {
+    return request(app)
+      .get("/api/articles?p")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(10);
+      });
+  });
+  test("GET 200: Returns an array of articles offset by the page number set", () => {
+    return request(app)
+      .get("/api/articles?p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(3);
+      });
+  });
+  test("GET 200: Limit defaults to 10 even when passed in invalid types for conversion", () => {
+    return request(app)
+      .get("/api/articles?limit=invalid_format")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(10);
+      });
+  });
+  test("GET 200: Page defaults to 1 even when passed in invalid types for conversion", () => {
+    return request(app)
+      .get("/api/articles?limit=10&p=invalid_format")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(10);
+      });
+  });
+  test("GET 200: Page defaults to 1 when passed in negative integers", () => {
+    return request(app)
+      .get("/api/articles?limit=10&p=-1")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(10);
+      });
+  });
+  test("GET 200: Limit defaults to 10 when passed in negative integers", () => {
+    return request(app)
+      .get("/api/articles?limit=-10&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(10);
+      });
+  });
+  test("GET 200: Returns the final possible page if the page exceeds the possible pages", () => {
+    return request(app)
+      .get("/api/articles?limit=10&p=10")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toHaveLength(3);
+      });
+  });
+  test("The articles are divided into the proper page divisions", async () => {
+    const pageLimits = [];
+    for (let i = 1; i < 8; i++) {
+      pageLimits.push(
+        await request(app)
+          .get(`/api/articles?limit=2&p=${i}`)
+          .expect(200)
+          .then(({ body }) => {
+            const articles = body.articles;
+            return articles.length;
+          })
+      );
+    }
+    expect(pageLimits).toEqual([2, 2, 2, 2, 2, 2, 1]);
+  });
+});
+describe("UTILS: getMaxArticlePages", () => {
+  test("Returns a number representing the maximum amount of pages a limit renders", async () => {
+    await getMaxArticlePages(2).then((result) => {
+      expect(result).toBe(7);
     });
   });
 });
