@@ -4,7 +4,10 @@ const {
   fetchCommentsByArticleId,
   insertCommentByArticleId,
   updateArticleVotesById,
+  insertArticle,
 } = require("../models/articles.model");
+const { fetchUserByUsername } = require("../models/users.model");
+const { getTopicByName } = require("./utils/getTopicByName");
 
 exports.getArticleById = (request, response, next) => {
   const id = request.params.article_id;
@@ -75,6 +78,28 @@ exports.patchArticleById = (request, response, next) => {
   Promise.all(checkArticleUpdateVotes)
     .then((results) => {
       response.status(200).send({ article: results[1] });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postArticle = (request, response, next) => {
+  const { author, title, body, topic, article_img_url } = request.body;
+
+  if (!author || !title || !body || !topic) {
+    return next({ status: 400, msg: "Bad request" });
+  }
+
+  const checkUserCheckTopicInsertArticle = [
+    fetchUserByUsername(author),
+    getTopicByName(topic),
+    insertArticle(author, title, body, topic, article_img_url),
+  ];
+
+  Promise.all(checkUserCheckTopicInsertArticle)
+    .then((results) => {
+      response.status(200).send({ article: results[2] });
     })
     .catch((err) => {
       next(err);

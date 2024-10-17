@@ -1,14 +1,12 @@
 exports.handlePsqlErrors = (err, request, response, next) => {
   if (err.code === "22P02") {
-    response
-      .status(400)
-      .send({ status: 400, msg: "Bad request - invalid type" });
+    response.status(400).send({ status: 400, msg: "Bad request" });
   }
   if (err.code === "23503") {
-    response.status(404).send({ status: 404, msg: "Username does not exist" });
+    response.status(404).send({ status: 404, msg: "Not found" });
   }
   if (err.code === "23502") {
-    response.status(400).send({ status: 400, msg: "Missing required key(s)" });
+    response.status(400).send({ status: 400, msg: "Bad request" });
   } else next(err);
 };
 

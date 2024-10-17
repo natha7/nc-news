@@ -7,7 +7,7 @@ exports.removeCommentById = (id) => {
       if (!rows[0]) {
         return Promise.reject({
           status: 404,
-          msg: `No comment with id ${id} found`,
+          msg: `Not found`,
         });
       }
     });
@@ -23,7 +23,7 @@ exports.updateCommentById = (id, inc_votes) => {
       if (!rows[0]) {
         return Promise.reject({
           status: 404,
-          msg: `Comment with id: ${id} not found`,
+          msg: `Not found`,
         });
       }
       return rows[0];

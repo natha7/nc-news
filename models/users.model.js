@@ -13,7 +13,7 @@ exports.fetchUserByUsername = (username) => {
   if (specialCharacters.test(username)) {
     return Promise.reject({
       status: 400,
-      msg: "Bad request - username cannot contain special characters",
+      msg: "Bad request",
     });
   }
 
@@ -25,7 +25,7 @@ exports.fetchUserByUsername = (username) => {
       if (!rows[0]) {
         return Promise.reject({
           status: 404,
-          msg: `No user found with username: ${username}`,
+          msg: `Not found`,
         });
       }
       return rows[0];

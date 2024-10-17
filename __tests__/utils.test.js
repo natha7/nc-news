@@ -1,3 +1,4 @@
+const { getTopicByName } = require("../controllers/utils/getTopicByName");
 const {
   convertTimestampToDate,
   createRef,
@@ -100,5 +101,20 @@ describe("formatComments", () => {
     const comments = [{ created_at: timestamp }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
+  });
+});
+describe("getTopicByName", () => {
+  test("Returns a topic object when topic exists in the topics table", async () => {
+    expect(await getTopicByName("cats")).toEqual({
+      description: "Not dogs",
+      slug: "cats",
+    });
+  });
+  test("Returns a no topic found error when the result of the query is empty", async () => {
+    expect(
+      await getTopicByName("dogs").catch((err) => {
+        expect(err.msg).toBe("Not found");
+      })
+    );
   });
 });

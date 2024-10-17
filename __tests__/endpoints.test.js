@@ -60,7 +60,7 @@ describe("GET: /api/articles/:article_id", () => {
       .get("/api/articles/invalid_id")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request - invalid type");
+        expect(body.msg).toBe("Bad request");
       });
   });
   test("GET 200: Returns an article with the correct article id and properties and additionally a comment_count property when article has comments", () => {
@@ -88,7 +88,7 @@ describe("GET: /api/articles/:article_id", () => {
       .get("/api/articles/999")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article does not exist");
+        expect(body.msg).toBe("Not found");
       });
   });
 });
@@ -149,7 +149,7 @@ describe("GET: /api/articles/:article_id/comments", () => {
       .get("/api/articles/invalid_id/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request - invalid type");
+        expect(body.msg).toBe("Bad request");
       });
   });
   test("GET 404: Returns a not found error when passed an id that can be processed but there are no associated rows", () => {
@@ -157,7 +157,7 @@ describe("GET: /api/articles/:article_id/comments", () => {
       .get("/api/articles/9999/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article does not exist");
+        expect(body.msg).toBe("Not found");
       });
   });
   test("GET 200: Returns an empty comments array when article id exists but the article has no associated comments", () => {
@@ -203,7 +203,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
       .send(commentToPost)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Missing required key(s)");
+        expect(body.msg).toBe("Bad request");
       });
   });
   test("POST 404: Returns a not found error when article with passed in id is valid but does not exist", () => {
@@ -217,7 +217,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
       .send(commentToPost)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article does not exist");
+        expect(body.msg).toBe("Not found");
       });
   });
   test("POST 400: Returns a bad request error when article with passed in id is invalid", () => {
@@ -231,10 +231,10 @@ describe("POST: /api/articles/:article_id/comments", () => {
       .send(commentToPost)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request - invalid type");
+        expect(body.msg).toBe("Bad request");
       });
   });
-  test("POST 404: Returns a not found error when the username passed in the comment does not exist", () => {
+  test("POST 400: Returns a bad request error when the username passed in the comment does not exist", () => {
     const commentToPost = {
       username: "invalid_user",
       body: "Test comment",
@@ -245,7 +245,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
       .send(commentToPost)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Username does not exist");
+        expect(body.msg).toBe("Not found");
       });
   });
 });
@@ -280,7 +280,7 @@ describe("PATCH: /api/articles/:article_id", () => {
       .send(votesToPatch)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Missing required key(s)");
+        expect(body.msg).toBe("Bad request");
       });
   });
   test("PATCH 404: Returns a not found request error when article_id with the passed in id does not exist", () => {
@@ -293,7 +293,7 @@ describe("PATCH: /api/articles/:article_id", () => {
       .send(votesToPatch)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article does not exist");
+        expect(body.msg).toBe("Not found");
       });
   });
   test("PATCH 400: Returns a bad request error when value in inc_votes is not a valid data type", () => {
@@ -306,7 +306,7 @@ describe("PATCH: /api/articles/:article_id", () => {
       .send(votesToPatch)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request - invalid type");
+        expect(body.msg).toBe("Bad request");
       });
   });
 
@@ -320,7 +320,7 @@ describe("PATCH: /api/articles/:article_id", () => {
       .send(votesToPatch)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request - invalid type");
+        expect(body.msg).toBe("Bad request");
       });
   });
 });
@@ -339,7 +339,7 @@ describe("DELETE: /api/comments/:comment_id", () => {
       .delete("/api/comments/invalid_id")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request - invalid type");
+        expect(body.msg).toBe("Bad request");
       });
   });
   test("DELETE 404: Returns a not found error when provided comment_id does not exist in the database", () => {
@@ -347,7 +347,7 @@ describe("DELETE: /api/comments/:comment_id", () => {
       .delete("/api/comments/999")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No comment with id 999 found");
+        expect(body.msg).toBe("Not found");
       });
   });
 });
@@ -542,7 +542,7 @@ describe("GET: /api/articles?topics", () => {
       .get("/api/articles?topic=lattes")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No articles on lattes found");
+        expect(body.msg).toBe("Not found");
       });
   });
 });
@@ -575,7 +575,7 @@ describe("GET: /api/users/:username", () => {
       .get("/api/users/invalid_user")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("No user found with username: invalid_user");
+        expect(body.msg).toBe("Not found");
       });
   });
   test("GET 400: Returns a bad request error when the username contains special characters", () => {
@@ -583,9 +583,7 @@ describe("GET: /api/users/:username", () => {
       .get("/api/users/;special!character*user")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe(
-          "Bad request - username cannot contain special characters"
-        );
+        expect(body.msg).toBe("Bad request");
       });
   });
 });
@@ -627,7 +625,7 @@ describe("PATCH: /api/comments/:comment_id", () => {
       .send({ inc_votes: 1 })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request - invalid type");
+        expect(body.msg).toBe("Bad request");
       });
   });
   test("PATCH 404: Returns a not found error when the comment_id provided is a valid type but does not exist in the database", () => {
@@ -636,7 +634,7 @@ describe("PATCH: /api/comments/:comment_id", () => {
       .send({ inc_votes: 1 })
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Comment with id: 9999 not found");
+        expect(body.msg).toBe("Not found");
       });
   });
   test("PATCH 400: Returns a bad request error when the inc_votes value is not valid i.e not a number", () => {
@@ -645,7 +643,7 @@ describe("PATCH: /api/comments/:comment_id", () => {
       .send({ inc_votes: "invalid input" })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request - invalid type");
+        expect(body.msg).toBe("Bad request");
       });
   });
   test("PATCH 400: Returns a bad request error when the inc_votes value is a decimal", () => {
@@ -654,7 +652,175 @@ describe("PATCH: /api/comments/:comment_id", () => {
       .send({ inc_votes: 4.99 })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request - invalid type");
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("POST: /api/articles", () => {
+  test("POST 200: Returns the posted article with the correct properties some matching the request and some set by default", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+        title: "an essay on testing",
+        body: "testing is important, thank you for reading",
+        topic: "paper",
+        article_img_url:
+          "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg",
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toHaveProperty("author", "butter_bridge");
+        expect(article).toHaveProperty("title", "an essay on testing");
+        expect(article).toHaveProperty(
+          "body",
+          "testing is important, thank you for reading"
+        );
+        expect(article).toHaveProperty("topic", "paper");
+        expect(article).toHaveProperty(
+          "article_img_url",
+          "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg"
+        );
+        expect(article).toHaveProperty("article_id");
+        expect(article).toHaveProperty("votes", 0);
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("comment_count", 0);
+      });
+  });
+  test("POST 404: Returns a not found error when the username corresponding to the author key does not exist in users", () => {
+    const articleToPost = {
+      author: "invalid_user",
+      title: "an essay on testing",
+      body: "testing is important, thank you for reading",
+      topic: "paper",
+      article_img_url:
+        "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articleToPost)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+  test("POST 404: Returns a not found error when the topic corresponding to the topic key does not exist in topics", () => {
+    const articleToPost = {
+      author: "butter_bridge",
+      title: "an essay on testing",
+      body: "testing is important, thank you for reading",
+      topic: "invalid_topic",
+      article_img_url:
+        "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(articleToPost)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+  test("POST 404: Returns a combined not found error when the topic corresponding to the topic key and the username in users does not exist", () => {
+    const articleToPost = {
+      author: "invalid_user",
+      title: "an essay on testing",
+      body: "testing is important, thank you for reading",
+      topic: "invalid_topic",
+      article_img_url:
+        "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articleToPost)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+  test("POST 400: Returns a bad request error when missing essential input keys: author", () => {
+    const articleToPost = {
+      title: "an essay on testing",
+      body: "testing is important, thank you for reading",
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articleToPost)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 400: Returns a bad request error when missing essential input keys: title", () => {
+    const articleToPost = {
+      author: "butter_bridge",
+      body: "testing is important, thank you for reading",
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articleToPost)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 400: Returns a bad request error when missing essential input keys: body", () => {
+    const articleToPost = {
+      author: "butter_bridge",
+      title: "an essay on testing",
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articleToPost)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 400: Returns a bad request error when missing essential input keys: topic", () => {
+    const articleToPost = {
+      author: "butter_bridge",
+      title: "an essay on testing",
+      body: "testing is important, thank you for reading",
+      article_img_url:
+        "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(articleToPost)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 200: Returns an article object with a default property for the article_img_url when no key/value for url provided", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+        title: "an essay on testing",
+        body: "testing is important, thank you for reading",
+        topic: "paper",
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toHaveProperty(
+          "article_img_url",
+          "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700"
+        );
       });
   });
 });

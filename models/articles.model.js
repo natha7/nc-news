@@ -12,7 +12,7 @@ exports.fetchArticleById = (id) => {
     )
     .then(({ rows }) => {
       if (!rows[0]) {
-        return Promise.reject({ status: 404, msg: "Article does not exist" });
+        return Promise.reject({ status: 404, msg: "Not found" });
       }
       return rows[0];
     });
@@ -55,11 +55,11 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
     if (rows.length === 0 && topic) {
       return Promise.reject({
         status: 404,
-        msg: `No articles on ${topic} found`,
+        msg: `Not found`,
       });
     }
     if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "No articles found" });
+      return Promise.reject({ status: 404, msg: "Not found" });
     }
     return rows;
   });
@@ -97,6 +97,33 @@ exports.updateArticleVotesById = (id, inc_votes) => {
       `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
       [inc_votes, id]
     )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
+exports.insertArticle = (author, title, body, topic, article_img_url) => {
+  const queryVals = [author, title, body, topic];
+  let queryString = `INSERT into articles (author, title, body, topic`;
+
+  if (article_img_url) {
+    queryVals.push(article_img_url);
+    queryString += `, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING article_id`;
+  } else {
+    queryString += `) VALUES ($1, $2, $3, $4) RETURNING article_id`;
+  }
+  return db
+    .query(queryString, queryVals)
+    .then(({ rows }) => {
+      const { article_id } = rows[0];
+
+      return db.query(
+        `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, articles.body, CAST(COUNT(comments.body) AS INTEGER) AS comment_count FROM articles 
+        LEFT OUTER JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1
+        GROUP BY articles.article_id`,
+        [article_id]
+      );
+    })
     .then(({ rows }) => {
       return rows[0];
     });
