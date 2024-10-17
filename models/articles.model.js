@@ -74,10 +74,11 @@ exports.fetchArticles = (
   if (typeof limit === "number" && typeof p === "number") {
     return getMaxArticlePages(limit)
       .then((maxPages) => {
+        maxPages = (maxPages - 1) * limit;
         if (p > maxPages) {
           queryValues.push(limit);
           queryString += ` LIMIT $${queryValues.length}`;
-          queryValues.push((maxPages - 1) * limit);
+          queryValues.push(maxPages);
           queryString += ` OFFSET $${queryValues.length}`;
         } else {
           queryValues.push(limit);
