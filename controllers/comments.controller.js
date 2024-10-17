@@ -7,7 +7,7 @@ exports.deleteCommentById = (request, response, next) => {
   const id = request.params.comment_id;
   removeCommentById(id)
     .then(() => {
-      return response.status(204).send();
+      response.status(204).send();
     })
     .catch((err) => {
       next(err);
@@ -20,7 +20,7 @@ exports.patchCommentById = (request, response, next) => {
 
   updateCommentById(id, inc_votes)
     .then((comment) => {
-      return response.status(200).send({ comment });
+      response.status(200).send({ comment });
     })
     .catch((err) => {
       next(err);

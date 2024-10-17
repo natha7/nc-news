@@ -1,4 +1,4 @@
-const { getMaxArticlePages } = require("../controllers/utils/getMaxPages.js");
+const { getMaxArticlePages } = require("./utils/getMaxPages.js");
 const db = require("../db/connection.js");
 const format = require("pg-format");
 

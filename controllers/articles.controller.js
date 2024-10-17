@@ -13,7 +13,7 @@ exports.getArticleById = (request, response, next) => {
   const id = request.params.article_id;
   fetchArticleById(id)
     .then((article) => {
-      return response.status(200).send({ article });
+      response.status(200).send({ article });
     })
     .catch((err) => {
       next(err);
@@ -26,7 +26,7 @@ exports.getArticles = (request, response, next) => {
 
   fetchArticles(...getParams)
     .then((articles) => {
-      return response.status(200).send({ articles });
+      response.status(200).send({ articles });
     })
     .catch((err) => {
       next(err);
@@ -43,7 +43,7 @@ exports.getCommentsByArticleId = (request, response, next) => {
 
   Promise.all(getArticleGetComments)
     .then((results) => {
-      return response.status(200).send({ comments: results[1] });
+      response.status(200).send({ comments: results[1] });
     })
     .catch((err) => {
       next(err);
@@ -61,7 +61,7 @@ exports.postCommentByArticleId = (request, response, next) => {
 
   Promise.all(checkArticleInsertComment)
     .then((results) => {
-      return response.status(201).send({ comment: results[1] });
+      response.status(201).send({ comment: results[1] });
     })
     .catch((err) => {
       next(err);
@@ -79,7 +79,7 @@ exports.patchArticleById = (request, response, next) => {
 
   Promise.all(checkArticleUpdateVotes)
     .then((results) => {
-      return response.status(200).send({ article: results[1] });
+      response.status(200).send({ article: results[1] });
     })
     .catch((err) => {
       next(err);
@@ -101,7 +101,7 @@ exports.postArticle = (request, response, next) => {
 
   Promise.all(checkUserCheckTopicInsertArticle)
     .then((results) => {
-      return response.status(201).send({ article: results[2] });
+      response.status(201).send({ article: results[2] });
     })
     .catch((err) => {
       next(err);

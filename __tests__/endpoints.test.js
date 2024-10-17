@@ -5,7 +5,7 @@ const db = require("../db/connection.js");
 const app = require("../app.js");
 const endpoints = require("../endpoints.json");
 const { getTopicByName } = require("../controllers/utils/getTopicByName.js");
-const { getMaxArticlePages } = require("../controllers/utils/getMaxPages.js");
+const { getMaxArticlePages } = require("../models/utils/getMaxPages.js");
 
 beforeEach(() => seed(testData));
 
