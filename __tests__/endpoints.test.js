@@ -660,7 +660,7 @@ describe("PATCH: /api/comments/:comment_id", () => {
 });
 
 describe("POST: /api/articles", () => {
-  test("POST 200: Returns the posted article with the correct properties some matching the request and some set by default", () => {
+  test("POST 201: Returns the posted article with the correct properties some matching the request and some set by default", () => {
     return request(app)
       .post("/api/articles")
       .send({
@@ -671,7 +671,7 @@ describe("POST: /api/articles", () => {
         article_img_url:
           "https://images.pexels.com/photos/965345/pexels-photo-965345.jpeg?cs=srgb&dl=pexels-markusspiske-965345.jpg&fm=jpg",
       })
-      .expect(200)
+      .expect(201)
       .then(({ body }) => {
         const article = body.article;
         expect(article).toHaveProperty("author", "butter_bridge");
@@ -807,7 +807,7 @@ describe("POST: /api/articles", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("POST 200: Returns an article object with a default property for the article_img_url when no key/value for url provided", () => {
+  test("POST 201: Returns an article object with a default property for the article_img_url when no key/value for url provided", () => {
     return request(app)
       .post("/api/articles")
       .send({
@@ -816,7 +816,7 @@ describe("POST: /api/articles", () => {
         body: "testing is important, thank you for reading",
         topic: "paper",
       })
-      .expect(200)
+      .expect(201)
       .then(({ body }) => {
         const article = body.article;
         expect(article).toHaveProperty(

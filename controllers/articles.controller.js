@@ -101,7 +101,7 @@ exports.postArticle = (request, response, next) => {
 
   Promise.all(checkUserCheckTopicInsertArticle)
     .then((results) => {
-      response.status(200).send({ article: results[2] });
+      response.status(201).send({ article: results[2] });
     })
     .catch((err) => {
       next(err);
