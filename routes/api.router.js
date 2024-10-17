@@ -1,9 +1,9 @@
 const express = require("express");
 const { getEndpoints } = require("../controllers");
-const articlesRouter = require("./articles.js");
-const usersRouter = require("./users.js");
-const topicsRouter = require("./topics.js");
-const commentsRouter = require("./comments.js");
+const articlesRouter = require("./articles.router.js");
+const usersRouter = require("./users.router.js");
+const topicsRouter = require("./topics.router.js");
+const commentsRouter = require("./comments.router.js");
 const router = express.Router({ mergeParams: true });
 
 router.get("/", getEndpoints);
