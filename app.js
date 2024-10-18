@@ -11,8 +11,8 @@ app.use(express.json());
 
 app.use("/api", apiRouter);
 
-app.all("*", (request, response, next) => {
-  next({ status: 404, msg: "Not found" });
+app.use("*", (request, response, next) => {
+  next({ status: 404, msg: "Please use /api to see endpoint documentation" });
 });
 
 app.use(handlePsqlErrors);

@@ -16,4 +16,8 @@ router.use("/topics", topicsRouter);
 
 router.use("/comments", commentsRouter);
 
+router.all("*", (request, response, next) => {
+  next({ status: 404, msg: "Not found" });
+});
+
 module.exports = router;
