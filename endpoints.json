@@ -222,5 +222,10 @@
     "exampleResponse": {
       "topic": { "slug": "dogs", "description": "all things dogs" }
     }
+  },
+  "DELETE /api/articles/:article_id:": {
+    "description": "deletes an article from the articles table by id",
+    "queries": [],
+    "exampleResponse": {}
   }
 }
