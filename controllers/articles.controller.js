@@ -35,10 +35,11 @@ exports.getArticles = (request, response, next) => {
 
 exports.getCommentsByArticleId = (request, response, next) => {
   const id = request.params.article_id;
+  const { limit, p } = request.query;
 
   const getArticleGetComments = [
     fetchArticleById(id),
-    fetchCommentsByArticleId(id),
+    fetchCommentsByArticleId(id, limit, p),
   ];
 
   Promise.all(getArticleGetComments)

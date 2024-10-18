@@ -1,6 +1,9 @@
 const { getMaxArticlePages } = require("./utils/getMaxPages.js");
 const db = require("../db/connection.js");
 const format = require("pg-format");
+const {
+  getMaxCommentPagesByArticleId,
+} = require("./utils/getMaxCommentPagesByArticleId.js");
 
 exports.fetchArticleById = (id) => {
   return db
@@ -76,10 +79,7 @@ exports.fetchArticles = (
       .then((maxPages) => {
         maxPages = (maxPages - 1) * limit;
         if (p > maxPages) {
-          queryValues.push(limit);
-          queryString += ` LIMIT $${queryValues.length}`;
-          queryValues.push(maxPages);
-          queryString += ` OFFSET $${queryValues.length}`;
+          return Promise.reject({ status: 404, msg: "Not found" });
         } else {
           queryValues.push(limit);
           queryString += ` LIMIT $${queryValues.length}`;
@@ -98,16 +98,42 @@ exports.fetchArticles = (
   }
 };
 
-exports.fetchCommentsByArticleId = (id) => {
-  return db
-    .query(
-      `SELECT comment_id, votes, created_at, author, body, article_id FROM comments WHERE article_id = $1 ORDER BY created_at DESC
-      `,
-      [id]
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+exports.fetchCommentsByArticleId = (id, limit, p) => {
+  let queryString = `SELECT comment_id, votes, created_at, author, body, article_id FROM comments WHERE article_id = $1 ORDER BY created_at DESC`;
+  const queryValues = [id];
+
+  limit = Number(limit);
+  p = Number(p);
+
+  if (!limit || Number.isNaN(limit) || limit <= 0) {
+    limit = 10;
+  }
+
+  if (!p || Number.isNaN(p) || p <= 0) {
+    p = 1;
+  }
+
+  p = (p - 1) * limit;
+
+  if (typeof limit === "number" && typeof p === "number") {
+    return getMaxCommentPagesByArticleId(limit, id)
+      .then((maxPages) => {
+        maxPages = (maxPages - 1) * limit;
+        if (p > maxPages && maxPages >= 0) {
+          return Promise.reject({ status: 404, msg: "Not found" });
+        } else {
+          queryValues.push(limit);
+          queryString += ` LIMIT $${queryValues.length}`;
+          queryValues.push(p);
+          queryString += ` OFFSET $${queryValues.length}`;
+        }
+      })
+      .then(() => {
+        return db.query(queryString, queryValues).then(({ rows }) => {
+          return rows;
+        });
+      });
+  }
 };
 
 exports.insertCommentByArticleId = (id, commentToPost) => {
