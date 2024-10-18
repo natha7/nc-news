@@ -5,7 +5,7 @@ exports.handlePsqlErrors = (err, request, response, next) => {
   if (err.code === "23503") {
     return response.status(404).send({ status: 404, msg: "Not found" });
   }
-  if (err.code === "23502") {
+  if (err.code === "23502" || err.code === "23505") {
     return response.status(400).send({ status: 400, msg: "Bad request" });
   } else next(err);
 };
