@@ -4,6 +4,7 @@ const format = require("pg-format");
 const {
   getMaxCommentPagesByArticleId,
 } = require("./utils/getMaxCommentPagesByArticleId.js");
+const { pAndLimitConverter } = require("./utils/pAndLimitConverter.js");
 
 exports.fetchArticleById = (id) => {
   return db
@@ -31,19 +32,7 @@ exports.fetchArticles = (
 ) => {
   order = order.toUpperCase();
   sort_by = sort_by.toLowerCase();
-
-  limit = Number(limit);
-  p = Number(p);
-
-  if (!p || Number.isNaN(p) || p <= 0) {
-    p = 1;
-  }
-
-  if (!limit || Number.isNaN(limit) || limit <= 0) {
-    limit = 10;
-  }
-
-  p = (p - 1) * limit;
+  [p, limit] = pAndLimitConverter(p, limit);
 
   const validQueries = [
     "article_id",
@@ -74,66 +63,50 @@ exports.fetchArticles = (
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  if (typeof limit === "number" && typeof p === "number") {
-    return getMaxArticlePages(limit)
-      .then((maxPages) => {
-        maxPages = (maxPages - 1) * limit;
-        if (p > maxPages) {
+  return getMaxArticlePages(limit)
+    .then((maxPages) => {
+      maxPages = (maxPages - 1) * limit;
+      if (p > maxPages) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      } else {
+        queryValues.push(limit);
+        queryString += ` LIMIT $${queryValues.length}`;
+        queryValues.push(p);
+        queryString += ` OFFSET $${queryValues.length}`;
+      }
+    })
+    .then(() => {
+      return db.query(queryString, queryValues).then(({ rows }) => {
+        if (rows.length === 0) {
           return Promise.reject({ status: 404, msg: "Not found" });
-        } else {
-          queryValues.push(limit);
-          queryString += ` LIMIT $${queryValues.length}`;
-          queryValues.push(p);
-          queryString += ` OFFSET $${queryValues.length}`;
         }
-      })
-      .then(() => {
-        return db.query(queryString, queryValues).then(({ rows }) => {
-          if (rows.length === 0) {
-            return Promise.reject({ status: 404, msg: "Not found" });
-          }
-          return rows;
-        });
+        return rows;
       });
-  }
+    });
 };
 
 exports.fetchCommentsByArticleId = (id, limit, p) => {
+  [p, limit] = pAndLimitConverter(p, limit);
   let queryString = `SELECT comment_id, votes, created_at, author, body, article_id FROM comments WHERE article_id = $1 ORDER BY created_at DESC`;
   const queryValues = [id];
 
-  limit = Number(limit);
-  p = Number(p);
-
-  if (!limit || Number.isNaN(limit) || limit <= 0) {
-    limit = 10;
-  }
-
-  if (!p || Number.isNaN(p) || p <= 0) {
-    p = 1;
-  }
-
-  p = (p - 1) * limit;
-
-  if (typeof limit === "number" && typeof p === "number") {
-    return getMaxCommentPagesByArticleId(limit, id)
-      .then((maxPages) => {
-        maxPages = (maxPages - 1) * limit;
-        if (p > maxPages && maxPages >= 0) {
-          return Promise.reject({ status: 404, msg: "Not found" });
-        } else {
-          queryValues.push(limit);
-          queryString += ` LIMIT $${queryValues.length}`;
-          queryValues.push(p);
-          queryString += ` OFFSET $${queryValues.length}`;
-        }
-      })
-      .then(() => {
-        return db.query(queryString, queryValues).then(({ rows }) => {
-          return rows;
-        });
+  return getMaxCommentPagesByArticleId(limit, id)
+    .then((maxPages) => {
+      maxPages = (maxPages - 1) * limit;
+      if (p > maxPages && maxPages >= 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      } else {
+        queryValues.push(limit);
+        queryString += ` LIMIT $${queryValues.length}`;
+        queryValues.push(p);
+        queryString += ` OFFSET $${queryValues.length}`;
+      }
+    })
+    .then(() => {
+      return db.query(queryString, queryValues).then(({ rows }) => {
+        return rows;
       });
-  }
+    });
 };
 
 exports.insertCommentByArticleId = (id, commentToPost) => {

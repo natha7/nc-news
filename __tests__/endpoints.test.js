@@ -9,6 +9,7 @@ const { getMaxArticlePages } = require("../models/utils/getMaxPages.js");
 const {
   getMaxCommentPagesByArticleId,
 } = require("../models/utils/getMaxCommentPagesByArticleId.js");
+const { pAndLimitConverter } = require("../models/utils/pAndLimitConverter.js");
 
 beforeEach(() => seed(testData));
 
@@ -842,6 +843,7 @@ describe("UTILS: getTopicByName", () => {
     });
   });
 });
+
 describe("GET /api/articles?limit=&p=", () => {
   test("GET 200: Returns an array of articles to a max number of the limit, at a default of 10", () => {
     return request(app)
@@ -939,6 +941,7 @@ describe("GET /api/articles?limit=&p=", () => {
     expect(pageLimits).toEqual([2, 2, 2, 2, 2, 2, 1]);
   });
 });
+
 describe("GET: /api/articles/article:id/comments?limit=&p=", () => {
   test("GET 200: Returns an array of comments with the article_id with a limit set to 10 by default", () => {
     return request(app)
@@ -1046,5 +1049,27 @@ describe("UTILS: getMaxCommentPagesByArticleId", () => {
     await getMaxCommentPagesByArticleId(limit, id).then((result) => {
       expect(result).toBe(6);
     });
+  });
+});
+
+describe("UTILS: pAndLimitConverter", () => {
+  test("Returns an array", () => {
+    expect(Array.isArray(pAndLimitConverter())).toBe(true);
+  });
+  test("Converts p into an offset based on limit, i.e if limit was 10 p = 1 should be 0, p = 2 should be 10", () => {
+    const [testPOne, testLimitOne] = pAndLimitConverter(1, 10);
+    const [testPTwo, testLimitTwo] = pAndLimitConverter(2, 10);
+    expect(testPOne).toBe(0);
+    expect(testPTwo).toBe(10);
+  });
+  test("Converts p and limit into numbers", () => {
+    const [testP, testLimit] = pAndLimitConverter("2", "10");
+    expect(typeof testP).toBe("number");
+    expect(typeof testLimit).toBe("number");
+  });
+  test("Inconvertible strings are returned as processed default values p default = 1 so result is 0 and limit default = 10", () => {
+    const [testP, testLimit] = pAndLimitConverter("invalidP", "invalidLimit");
+    expect(testP).toBe(0);
+    expect(testLimit).toBe(10);
   });
 });
