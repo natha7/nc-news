@@ -1096,7 +1096,7 @@ describe("POST: /api/topics", () => {
   });
 });
 
-describe.only("DELETE: /api/articles/:article_id", () => {
+describe("DELETE: /api/articles/:article_id", () => {
   test("DELETE 204: Returns a no content status code to display the fulfilled request with no content", () => {
     return request(app)
       .delete("/api/articles/1")
