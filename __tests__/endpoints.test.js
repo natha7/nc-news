@@ -6,6 +6,9 @@ const app = require("../app.js");
 const endpoints = require("../endpoints.json");
 const { getTopicByName } = require("../controllers/utils/getTopicByName.js");
 const { getMaxArticlePages } = require("../models/utils/getMaxPages.js");
+const {
+  getMaxCommentPagesByArticleId,
+} = require("../models/utils/getMaxCommentPagesByArticleId.js");
 
 beforeEach(() => seed(testData));
 
@@ -912,13 +915,12 @@ describe("GET /api/articles?limit=&p=", () => {
         expect(articles).toHaveLength(10);
       });
   });
-  test("GET 200: Returns the final possible page if the page exceeds the possible pages", () => {
+  test("GET 404: Returns a not found error when the page passed in exceeds the content", () => {
     return request(app)
       .get("/api/articles?limit=10&p=10")
-      .expect(200)
+      .expect(404)
       .then(({ body }) => {
-        const articles = body.articles;
-        expect(articles).toHaveLength(3);
+        expect(body.msg).toBe("Not found");
       });
   });
   test("The articles are divided into the proper page divisions", async () => {
@@ -937,10 +939,112 @@ describe("GET /api/articles?limit=&p=", () => {
     expect(pageLimits).toEqual([2, 2, 2, 2, 2, 2, 1]);
   });
 });
+describe("GET: /api/articles/article:id/comments?limit=&p=", () => {
+  test("GET 200: Returns an array of comments with the article_id with a limit set to 10 by default", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(10);
+        comments.forEach((comment) => {
+          expect(comment.article_id).toBe(1);
+        });
+      });
+  });
+  test("GET 200: Returns an array of comments with the article_id with a length of the limit", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(5);
+        comments.forEach((comment) => {
+          expect(comment.article_id).toBe(1);
+        });
+      });
+  });
+  test("GET 200: Limit defaults to 10 when provided an invalid type for conversion", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=invalid_type")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(10);
+      });
+  });
+  test("GET 200: Limit defaults to 10 when passed in a zero or lesser", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=-10")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(10);
+      });
+  });
+  test("GET 200: Returns an array of comments offset by the page number set at 1 by default", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(10);
+      });
+  });
+  test("GET 200: Page offset defaults to 1 when passed in an integer zero or lesser", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=0")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(10);
+      });
+  });
+  test("GET 200: Returns an array of comments offset by the page number", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(1);
+      });
+  });
+  test("GET 404: Returns a not found error when p exceeds max pages of comments", () => {
+    return request(app)
+      .get("/api/articles/1/comments?p=3")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+  test("The comments are divided into the proper page divisions", async () => {
+    const pageLimits = [];
+    for (let i = 1; i < 5; i++) {
+      await request(app)
+        .get(`/api/articles/1/comments?limit=3&p=${i}`)
+        .then(({ body }) => {
+          const comments = body.comments;
+          if (comments) pageLimits.push(comments.length);
+        });
+    }
+    expect(pageLimits).toEqual([3, 3, 3, 2]);
+  });
+});
+
 describe("UTILS: getMaxArticlePages", () => {
   test("Returns a number representing the maximum amount of pages a limit renders", async () => {
     await getMaxArticlePages(2).then((result) => {
       expect(result).toBe(7);
+    });
+  });
+});
+
+describe("UTILS: getMaxCommentPagesByArticleId", () => {
+  test("Returns a number representing the maximum amount of pages a limit renders", async () => {
+    const limit = 2;
+    const id = 1;
+    await getMaxCommentPagesByArticleId(limit, id).then((result) => {
+      expect(result).toBe(6);
     });
   });
 });

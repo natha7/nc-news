@@ -96,7 +96,7 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "fetchs an array of comments that share the article id provided",
-    "queries": [],
+    "queries": ["limit", "p"],
     "exampleResponse": {
       "comments": [
         {
