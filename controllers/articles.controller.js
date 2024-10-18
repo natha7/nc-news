@@ -5,6 +5,7 @@ const {
   insertCommentByArticleId,
   updateArticleVotesById,
   insertArticle,
+  removeArticleById,
 } = require("../models/articles.model");
 const { fetchUserByUsername } = require("../models/users.model");
 const { getTopicByName } = require("./utils/getTopicByName");
@@ -103,6 +104,23 @@ exports.postArticle = (request, response, next) => {
   Promise.all(checkUserCheckTopicInsertArticle)
     .then((results) => {
       response.status(201).send({ article: results[2] });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteArticleById = (request, response, next) => {
+  const id = request.params.article_id;
+
+  const getArticleRemoveArticleById = [
+    fetchArticleById(id),
+    removeArticleById(id),
+  ];
+
+  Promise.all(getArticleRemoveArticleById)
+    .then(() => {
+      response.status(204).send({});
     })
     .catch((err) => {
       next(err);

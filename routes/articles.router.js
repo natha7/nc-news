@@ -6,7 +6,10 @@ const {
   postCommentByArticleId,
   patchArticleById,
 } = require("../controllers");
-const { postArticle } = require("../controllers/articles.controller");
+const {
+  postArticle,
+  deleteArticleById,
+} = require("../controllers/articles.controller");
 const router = express.Router({ mergeParams: true });
 
 router.get("/", getArticles);
@@ -20,5 +23,7 @@ router.post("/:article_id/comments", postCommentByArticleId);
 router.post("/", postArticle);
 
 router.patch("/:article_id", patchArticleById);
+
+router.delete("/:article_id", deleteArticleById);
 
 module.exports = router;

@@ -1096,6 +1096,33 @@ describe("POST: /api/topics", () => {
   });
 });
 
+describe.only("DELETE: /api/articles/:article_id", () => {
+  test("DELETE 204: Returns a no content status code to display the fulfilled request with no content", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("DELETE 404: Returns a not found error if article with article_id does not exist", () => {
+    return request(app)
+      .delete("/api/articles/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+  test("DELETE 400: Returns a bad request error if article with article_id is not valid to process", () => {
+    return request(app)
+      .delete("/api/articles/invalid_id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
 describe("UTILS: getMaxArticlePages", () => {
   test("Returns a number representing the maximum amount of pages a limit renders", async () => {
     await getMaxArticlePages(2).then((result) => {

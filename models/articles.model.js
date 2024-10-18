@@ -160,3 +160,11 @@ exports.insertArticle = (author, title, body, topic, article_img_url) => {
       return rows[0];
     });
 };
+
+exports.removeArticleById = (id) => {
+  return db
+    .query(`DELETE FROM comments WHERE article_id = $1`, [id])
+    .then(() => {
+      return db.query(`DELETE FROM articles WHERE article_id = $1`, [id]);
+    });
+};
