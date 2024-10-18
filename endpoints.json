@@ -211,5 +211,16 @@
         "comment_count": 0
       }
     }
+  },
+  "POST /api/topics": {
+    "description": "posts a topic to the topics table",
+    "queries": [],
+    "exampleRequest": {
+      "slug": "dogs",
+      "description": "all things dogs"
+    },
+    "exampleResponse": {
+      "topic": { "slug": "dogs", "description": "all things dogs" }
+    }
   }
 }
