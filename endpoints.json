@@ -224,7 +224,7 @@
     }
   },
   "DELETE /api/articles/:article_id:": {
-    "description": "deletes an article from the articles table by id",
+    "description": "deletes an article from the articles table by article_id",
     "queries": [],
     "exampleResponse": {}
   }
