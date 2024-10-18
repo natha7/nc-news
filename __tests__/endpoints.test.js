@@ -844,7 +844,7 @@ describe("UTILS: getTopicByName", () => {
   });
 });
 
-describe("GET /api/articles?limit=&p=", () => {
+describe("GET: /api/articles?limit=&p=", () => {
   test("GET 200: Returns an array of articles to a max number of the limit, at a default of 10", () => {
     return request(app)
       .get("/api/articles?limit")
@@ -1034,6 +1034,68 @@ describe("GET: /api/articles/article:id/comments?limit=&p=", () => {
   });
 });
 
+describe("POST: /api/topics", () => {
+  test("POST 201: Returns the posted topic object with the correct keys", () => {
+    const topicToSend = {
+      slug: "dogs",
+      description: "all things dogs",
+    };
+
+    return request(app)
+      .post("/api/topics")
+      .send(topicToSend)
+      .expect(201)
+      .then(({ body }) => {
+        const topic = body.topic;
+        expect(topic).toHaveProperty("slug", "dogs");
+        expect(topic).toHaveProperty("description", "all things dogs");
+      });
+  });
+  test("POST 400: Returns a bad request error when missing slug key", () => {
+    const topicToSend = {
+      description: "all things dogs",
+    };
+
+    return request(app)
+      .post("/api/topics")
+      .send(topicToSend)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 201: Returns an object with an empty description when passed no description key", () => {
+    const topicToSend = {
+      slug: "dogs",
+    };
+
+    return request(app)
+      .post("/api/topics")
+      .send(topicToSend)
+      .expect(201)
+      .then(({ body }) => {
+        const topic = body.topic;
+        expect(topic).toHaveProperty("slug", "dogs");
+        expect(topic).toHaveProperty("description", null);
+      });
+  });
+
+  test("POST 400: Returns a bad request error when topic with same slug already exists", () => {
+    const topicToSend = {
+      slug: "cats",
+      description: "cats and stuff",
+    };
+
+    return request(app)
+      .post("/api/topics")
+      .send(topicToSend)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
 describe("UTILS: getMaxArticlePages", () => {
   test("Returns a number representing the maximum amount of pages a limit renders", async () => {
     await getMaxArticlePages(2).then((result) => {
@@ -1062,10 +1124,11 @@ describe("UTILS: pAndLimitConverter", () => {
     expect(testPOne).toBe(0);
     expect(testPTwo).toBe(10);
   });
-  test("Converts p and limit into numbers", () => {
-    const [testP, testLimit] = pAndLimitConverter("2", "10");
+  test("Converts p and limit into numbers where limit remains the same", () => {
+    const [testP, testLimit] = pAndLimitConverter("2", "20");
     expect(typeof testP).toBe("number");
     expect(typeof testLimit).toBe("number");
+    expect(testLimit).toBe(20);
   });
   test("Inconvertible strings are returned as processed default values p default = 1 so result is 0 and limit default = 10", () => {
     const [testP, testLimit] = pAndLimitConverter("invalidP", "invalidLimit");
