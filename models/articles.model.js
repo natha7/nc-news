@@ -1,10 +1,10 @@
-const { getMaxArticlePages } = require("./utils/getMaxPages.js");
 const db = require("../db/connection.js");
 const format = require("pg-format");
 const {
+  pAndLimitConverter,
+  getMaxArticlePages,
   getMaxCommentPagesByArticleId,
-} = require("./utils/getMaxCommentPagesByArticleId.js");
-const { pAndLimitConverter } = require("./utils/pAndLimitConverter.js");
+} = require("./utils/index.js");
 
 exports.fetchArticleById = (id) => {
   return db
