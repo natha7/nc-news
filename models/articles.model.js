@@ -58,7 +58,13 @@ exports.fetchArticles = (
 
   if (validQueries.includes(sort_by) && validOrders.includes(order)) {
     queryString += ` ORDER BY %I %s`;
+
+    if (sort_by !== "article_id") {
+      queryString += `, article_id`;
+    }
+
     queryString = format(queryString, sort_by, order);
+    console.log(queryString);
   } else {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
