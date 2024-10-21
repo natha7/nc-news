@@ -64,7 +64,6 @@ exports.fetchArticles = (
     }
 
     queryString = format(queryString, sort_by, order);
-    console.log(queryString);
   } else {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
